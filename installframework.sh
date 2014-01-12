@@ -61,7 +61,7 @@ make install
 
 npm -g install express supervisor
 
-ghost(){
+function ghost(){
 	echo "let's install Ghost";
 	read -p "Please enter the name of the document root you would like to use:" docRoot;
 	#lets get the port number
@@ -132,8 +132,16 @@ function installruby(){
 	yum -y install gcc g+= make automake autoconf curl-devel openssl-devel zlib-devel httpd-devel apr-devel apr-util-devel sqlite-devel yum install ruby-rdoc ruby-devel
 	
 	yum -y install rubygems
+	
+	echo "Looks like Ruby Gems was installed successfully. Installing Rails...";
 
-	echo "Looks like Ruby Gems was installed with the dopeness";
+    gem update
+    
+    gem update --system
+    
+    gem install rails
+
+	echo "Rails has been installed successfully";
 }
 
 while [[ $REPLY != 0 ]];
@@ -143,7 +151,7 @@ do
     Please Select:
             
     1. Install Node.js
-    2. Install Ruby Gems
+    2. Install Ruby Gems/Rails
     0. Quit
         
 _EOF_
