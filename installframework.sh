@@ -150,8 +150,6 @@ function unknownDistro(){
 Unknown Distro of Linux. Please select a version:
 1: Debian/Ubuntu
 2: Fedora/Red Hat/CentOS
-#3: Arch
-#4: OpenSUSE
 q: quit
 _EOF_
         read -p "Enter your selection >" distroChoice
