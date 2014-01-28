@@ -174,8 +174,7 @@ function installnode(){
     DISTRO=$(head -1 /etc/issue | cut -d " " -f 1)
     case $DISTRO in
         "Ubuntu"|"ubuntu") installnodeDPKG;; 
-        "CentOS"|"Fedora") echo "install on red hat";; 
-        "Arch") echo "Installing Arch version";; 
+        "CentOS"|"Fedora"|"Red") installnodeRPM;; 
         *) unknownDistro;;
 	esac
 }
