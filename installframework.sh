@@ -45,7 +45,7 @@ function ghost(){
 	sed -i "/2368/c\port: \'${primPort}\'" ./config.js
 	adduser ${userName};
 	chown -R ${userName}:${userName} /var/www/${docRoot};
-	#get the Ghost installation running using FOREVER
+    #get the Ghost installation running using FOREVER
 	npm install --production;
 	npm -g install forever;
 	NODE_ENV=production forever start index.js;
@@ -67,7 +67,6 @@ function installGhost(){
 	while [ "$loop" == "true" ]
 	do
 		read -p "Would you like to install Ghost CMS?" response;
-
 			case $response in
 				"y") ghost;
 					 loop=false;;
@@ -83,7 +82,7 @@ function installnodeDPKG(){
     apt-get update
     apt-get -y install build-essential
     apt-get -y install curl
-    #set a new part of the PATH env variable
+     #set a new part of the PATH env variable
     echo 'export PATH=$HOME/local/bin:$PATH' >> ~/.bashrc
     . ~/.bashrc
     mkdir ~/local
@@ -99,67 +98,32 @@ function installnodeDPKG(){
 }
 
 function installnodeRPM(){
-yum -y update
-yum -y groupinstall "Development Tools"
-yum -y install screen
-curl -O http://download-12.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
-rpm -ivh epel-release-6-8.noarch.rpm
-curl -O http://download-12.fedoraproject.org/pub/epel/6/i386/epel-release-6-9.noarch.rpm
-curl -O http://download-12.fedoraproject.org/pub/epel/6/i386/epel-release-6-9yum.noarch.rpm
-yum repolist
-yum update
-rpm -Uvh http://dl.fedoraproject.org/pub/epel/x86_64/epel-release-5-4.noarch.rpm
-rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
-yum install python26
-cd /
-ln -s /usr/bin/python26 /bin/python
-echo 'export Path=$HOME/bin:$PATH' >> ~/.bashrc
-source ~/.bashrc
-python -V
-cd /usr/src
-wget http://nodejs.org/dist/v0.10.24/node-v0.10.25.tar.gz 
-tar xvzf node-v0.10.25.tar.gz
-cd node-v0.10.25/
-./configure
-make
-make install
-npm -g install express supervisor
-
-installGhost;
-}
-
-function installnode(){
-    #get the distro version and call the appropriate function
-    DISTRO=$(head -1 /etc/issue | cut -d " " -f 1)
-    case $DISTRO in
-        "Ubuntu"|"ubuntu") installnodeDPKG;; ## call proper function after this
-        "CentOS"|"Fedora") installnodeRPM;; ## call proper function after this
-        "Arch") echo "Installing Arch version";; ## call proper function after this
-        *) loop1=true;
-            while [ "$loop1" == true ];
-            do
-                clear;
-                cat <<- _EOF_
-                Unknown Distro of Linux. Please select a version:
-                1: Debian/Ubuntu
-                2: Fedora/Red Hat/CentOS
-                #3: Arch
-                #4: OpenSUSE
-                q: quit
-                _EOF_
-                read -p "Enter your selection >" distroChoice
-                    case $distroChoice in
-                        "1") installnodeDPKG;
-                             loop1=false;;
-                        "2") installnodeRPM;
-                             loop1=false;;
-                        "q"|"Q") echo "Node.js will not be installed";
-                             sleep 2
-                             exit;;
-                        *) echo "Please enter a valid option";
-                            sleep 1;;
-                    esac
-            done
+    yum -y update
+    yum -y groupinstall "Development Tools"
+    yum -y install screen
+    curl -O http://download-12.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+    rpm -ivh epel-release-6-8.noarch.rpm
+    curl -O http://download-12.fedoraproject.org/pub/epel/6/i386/epel-release-6-9.noarch.rpm
+    curl -O http://download-12.fedoraproject.org/pub/epel/6/i386/epel-release-6-9yum.noarch.rpm
+    yum repolist
+    yum update
+    rpm -Uvh http://dl.fedoraproject.org/pub/epel/x86_64/epel-release-5-4.noarch.rpm
+    rpm -Uvh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
+    yum install python26
+    cd /
+    ln -s /usr/bin/python26 /bin/python
+    echo 'export Path=$HOME/bin:$PATH' >> ~/.bashrc
+    source ~/.bashrc
+    python -V
+    cd /usr/src
+    wget http://nodejs.org/dist/v0.10.24/node-v0.10.25.tar.gz 
+    tar xvzf node-v0.10.25.tar.gz
+    cd node-v0.10.25/
+    ./configure
+    make
+    make install
+    npm -g install express supervisor
+    installGhost;
 }
 
 function installrubyRPM(){
@@ -175,6 +139,45 @@ function installrubyRPM(){
     	clear;
 	echo "Rails has been installed successfully";
 	sleep 1;
+}
+
+function unknownDistro(){
+    loop1=true;
+    while [ "$loop1" == true ];
+    do
+        clear;
+        cat <<- _EOF_
+Unknown Distro of Linux. Please select a version:
+1: Debian/Ubuntu
+2: Fedora/Red Hat/CentOS
+#3: Arch
+#4: OpenSUSE
+q: quit
+_EOF_
+        read -p "Enter your selection >" distroChoice
+            case $distroChoice in
+                "1") installnodeDPKG;
+                     loop1=false;;
+                "2") installnodeRPM;
+                     loop1=false;;
+               "q"|"Q") echo "Node.js will not be installed";
+                        sleep 2
+                        exit;;
+                  *) echo "Please enter a valid option";
+                     sleep 1;;
+            esac
+    done  
+}
+
+function installnode(){
+    #get the distro version and call the appropriate function
+    DISTRO=$(head -1 /etc/issue | cut -d " " -f 1)
+    case $DISTRO in
+        "Ubuntu"|"ubuntu") installnodeDPKG;; 
+        "CentOS"|"Fedora") echo "install on red hat";; 
+        "Arch") echo "Installing Arch version";; 
+        *) unknownDistro;;
+	esac
 }
 
 while [[ $REPLY != 0 ]];
