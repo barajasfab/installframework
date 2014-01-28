@@ -141,7 +141,23 @@ function installrubyRPM(){
 	sleep 1;
 }
 
-function unknownDistro(){
+function installrubyDPKG(){
+    apt-get update
+    git clone git://github.com/sstephenson/rbenv.git .rbenv
+    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+    echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+    exec $SHELL
+
+    git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+    echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
+    exec $SHELL
+
+    rbenv install 2.0.0-p353
+    rbenv global 2.0.0-p353
+    ruby -v
+}
+
+function unknownDistroForNode(){
     loop1=true;
     while [ "$loop1" == true ];
     do
@@ -167,13 +183,49 @@ _EOF_
     done  
 }
 
+function unknownDistroForRuby(){
+    loop1=true;
+    while [ "$loop1" == true ];
+    do
+        clear;
+        cat <<- _EOF_
+Unknown Distro of Linux. Please select a version:
+1: Debian/Ubuntu
+2: Fedora/Red Hat/CentOS
+q: quit
+_EOF_
+        read -p "Enter your selection >" distroChoice
+            case $distroChoice in
+                "1") installrubyDPKG;
+                     loop1=false;;
+                "2") installrubyRPM;
+                     loop1=false;;
+               "q"|"Q") echo "Ruby will not be installed";
+                        sleep 2
+                        exit;;
+                  *) echo "Please enter a valid option";
+                     sleep 1;;
+            esac
+    done  
+}
+
 function installnode(){
     #get the distro version and call the appropriate function
     DISTRO=$(head -1 /etc/issue | cut -d " " -f 1)
     case $DISTRO in
         "Ubuntu"|"ubuntu") installnodeDPKG;; 
         "CentOS"|"Fedora"|"Red") installnodeRPM;; 
-        *) unknownDistro;;
+        *) unknownDistroForNode;;
+	esac
+}
+
+function installruby(){
+    #get the distro version and call the appropriate function
+    DISTRO=$(head -1 /etc/issue | cut -d " " -f 1)
+    case $DISTRO in
+        "Ubuntu"|"ubuntu") installrubyDPKG;; 
+        "CentOS"|"Fedora"|"Red") installrubyRPM;; 
+        *) unknownDistroForRuby;;
 	esac
 }
 
