@@ -116,7 +116,7 @@ function installnodeRPM(){
     source ~/.bashrc
     python -V
     cd /usr/src
-    wget http://nodejs.org/dist/v0.10.24/node-v0.10.25.tar.gz 
+    wget http://nodejs.org/dist/v0.10.25/node-v0.10.25.tar.gz
     tar xvzf node-v0.10.25.tar.gz
     cd node-v0.10.25/
     ./configure
@@ -143,6 +143,8 @@ function installrubyRPM(){
 
 function installrubyDPKG(){
     apt-get update
+    apt-get -y install rbenv
+    apt-get -y install git
     git clone git://github.com/sstephenson/rbenv.git .rbenv
     echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
     echo 'eval "$(rbenv init -)"' >> ~/.bashrc
@@ -155,6 +157,20 @@ function installrubyDPKG(){
     rbenv install 2.0.0-p353
     rbenv global 2.0.0-p353
     ruby -v
+}
+
+function installdjangoDPKG(){
+    apt-get -y install python-imaging python-pythonmagick python-markdown python-textile python-docutils
+    apt-get -y install python-django
+}
+
+function installdjangoRPM(){
+    cd /opt/
+    wget http://mirrors.nl.eu.kernel.org/fedora-epel/6/i386/epel-release-6-8.noarch.rpm
+    rpm -Uvh epel-release-6-8.noarch.rpm
+    rm -f epel-release-6-8.noarch.rpm
+    yum -y install python
+    yum -y install Django
 }
 
 function unknownDistroForNode(){
@@ -209,6 +225,32 @@ _EOF_
     done  
 }
 
+function unknownDistroForDjango(){
+    loop1=true;
+    while [ "$loop1" == true ];
+    do
+        clear;
+        cat <<- _EOF_
+Unknown Distro of Linux. Please select a version:
+1: Debian/Ubuntu
+2: Fedora/Red Hat/CentOS
+q: quit
+_EOF_
+        read -p "Enter your selection >" distroChoice
+            case $distroChoice in
+                "1") installdjangoDPKG;
+                     loop1=false;;
+                "2") installdjangoRPM;
+                     loop1=false;;
+               "q"|"Q") echo "Rdjango will not be installed";
+                        sleep 2
+                        exit;;
+                  *) echo "Please enter a valid option";
+                     sleep 1;;
+            esac
+    done  
+}
+
 function installnode(){
     #get the distro version and call the appropriate function
     DISTRO=$(head -1 /etc/issue | cut -d " " -f 1)
@@ -229,6 +271,16 @@ function installruby(){
 	esac
 }
 
+function installdjango(){
+    #get the distro version and call the appropriate function
+    DISTRO=$(head -1 /etc/issue | cut -d " " -f 1)
+    case $DISTRO in
+        "Ubuntu"|"ubuntu") installdjangoDPKG;; 
+        "CentOS"|"Fedora"|"Red") installdjangoRPM;; 
+        *) unknownDistroForDjango;;
+	esac
+}
+
 while [[ $REPLY != 0 ]];
 do
     clear;
@@ -237,16 +289,17 @@ do
             
     1. Install Node.js
     2. Install Ruby Gems/Rails
+    3. Install Django
     0. Quit
         
 _EOF_
-    read -p "Enter selection [0-2] > "
-    
-    if [[ $REPLY =~ ^[0-2]$ ]];
+    read -p "Enter selection [0-3] > "
+    if [[ $REPLY =~ ^[0-3]$ ]];
     then
         case $REPLY in
             "1") installnode;;
             "2") installruby;;
+            "3") installdjango;;
             "0") exit 0;;
         esac
     else
