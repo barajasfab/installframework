@@ -29,9 +29,10 @@ echo 'export Path=$HOME/bin:$PATH' >> ~/.bashrc
 source ~/.bashrc
 python -V
 cd /usr/src
-wget http://nodejs.org/dist/v0.10.24/node-v0.10.24.tar.gz
-tar xvzf node-v0.10.24.tar.gz
-cd node-v0.10.24/
+#wget http://nodejs.org/dist/v0.10.24/node-v0.10.24.tar.gz
+wget http://nodejs.org/dist/v0.10.32/node-v0.10.32.tar.gz
+tar xvzf node-v0.10.32.tar.gz
+cd node-v0.10.32/
 ./configure
 make
 make install
